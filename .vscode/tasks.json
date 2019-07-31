@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "pwsh ./make/make.ps1",
+            "group": "build"
+        },
+        {
+            "label": "install",
+            "type": "shell",
+            "command": "pwsh ./make/install.ps1",
+            "group": "test"
+        }
+    ]
+}
