@@ -37,7 +37,7 @@ local options = {
 	-- Sets the output format, from a few predefined ones.
 	-- Currently we have webm-vp8 (libvpx/libvorbis), webm-vp9 (libvpx-vp9/libvorbis)
 	-- and raw (rawvideo/pcm_s16le).
-	output_format = "webm-vp8",
+	output_format = "webm-vp9",
 	twopass = false,
 	-- If set, applies the video filters currently used on the playback to the encode.
 	apply_current_filters = true,
@@ -51,7 +51,7 @@ local options = {
 	additional_flags = "",
 	-- Useful for flags that may impact output filesize, such as crf, qmin, qmax etc
 	-- Won't be applied when strict_filesize_constraint is on.
-	non_strict_additional_flags = "--ovcopts-add=crf=10",
+	non_strict_additional_flags = "",
 	-- Display the encode progress, in %. Requires run_detached to be disabled.
 	-- On Windows, it shows a cmd popup. "auto" will display progress on non-Windows platforms.
 	display_progress = "auto",
