@@ -134,6 +134,10 @@ class EncodeOptionsPage extends Page
 			altDisplayNames:
 				[0]: "0 (CRF)"
 				[8000]: "8MB Discord limit"
+		crfOpts =
+			step: 1
+			min: 1
+			max: 51
 		audioOpts =
 			step: 8
 			min: 56
@@ -144,17 +148,25 @@ class EncodeOptionsPage extends Page
 		formatOpts =
 			possibleValues: [{fId, formats[fId].displayName} for fId in *formatIds]
 
+		libvpxOpts =
+			possibleValues: {{"realtime", "realtime (fast)"}, {"good", "default"}, {"best", "best (slow)"}}
+		x264_presetOpts =
+			possibleValues: {{"veryslow", "Very Slow"}, {"slower", "Slower"}, {"slow", "Slow"}, {"medium", "Medium (default)"}, {"fast", "Fast"}, {"faster", "Faster"}, {"veryfast", "Very Fast"}, {"superfast", "Super Fast"}, {"ultrafast", "Ultra-fast"}}
 		-- This could be a dict instead of a array of pairs, but order isn't guaranteed
 		-- by dicts on Lua.
 		@options = {
-			{"output_format", Option("list", "Output Format", options.output_format, formatOpts)}
-			{"twopass", Option("bool", "Two Pass", options.twopass)},
-			{"apply_current_filters", Option("bool", "Apply Current Video Filters", options.apply_current_filters)}
+			{"output_format", Option("list", "Output Format", options.output_format, formatOpts)},
+			{"libvpx_quality", Option("list", "VP9 Quality", options.libvpx_quality, libvpxOpts)},
+			{"x264_preset", Option("list", "x264 Preset", options.x264_preset, x264_presetOpts)},
+			{"apply_current_filters", Option("bool", "Apply Current Video Filters", options.apply_current_filters)},
 			{"scale_height", Option("list", "Scale Height", options.scale_height, scaleHeightOpts)},
+			{"twopass", Option("bool", "Two Pass", options.twopass)},
 			{"strict_filesize_constraint", Option("bool", "Strict Filesize Constraint", options.strict_filesize_constraint)},
-			{"write_filename_on_metadata", Option("bool", "Write Filename on Metadata", options.write_filename_on_metadata)},
-			{"target_filesize", Option("int", "Target Filesize", options.target_filesize, filesizeOpts)}
 			{"strict_audio_bitrate", Option("int", "Audio Bitrate", options.strict_audio_bitrate, audioOpts)},
+			{"target_filesize", Option("int", "Target Filesize", options.target_filesize, filesizeOpts)},
+			{"crf", Option("int", "CRF", options.crf, crfOpts)},
+			{"write_filename_on_metadata", Option("bool", "Write Filename on Metadata", options.write_filename_on_metadata)}
+
 		}
 
 		@keybinds =
