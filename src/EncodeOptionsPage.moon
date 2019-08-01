@@ -132,7 +132,11 @@ class EncodeOptionsPage extends Page
 			step: 250
 			min: 0
 			altDisplayNames:
-				[0]: "0 (constant quality)"
+				[0]: "0 (CRF)"
+				[8000]: "8MB Discord limit"
+		audioOpts =
+			step: 8
+			min: 56
 
 		-- I really dislike hardcoding this here, but, as said below, order in dicts isn't
 		-- guaranteed, and we can't use the formats dict keys.
@@ -150,6 +154,7 @@ class EncodeOptionsPage extends Page
 			{"strict_filesize_constraint", Option("bool", "Strict Filesize Constraint", options.strict_filesize_constraint)},
 			{"write_filename_on_metadata", Option("bool", "Write Filename on Metadata", options.write_filename_on_metadata)},
 			{"target_filesize", Option("int", "Target Filesize", options.target_filesize, filesizeOpts)}
+			{"strict_audio_bitrate", Option("int", "Audio Bitrate", options.strict_audio_bitrate, audioOpts)},
 		}
 
 		@keybinds =
