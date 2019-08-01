@@ -10,7 +10,8 @@ class WebmVP9 extends Format
 
 	getFlags: =>
 		{
-			"--ovcopts-add=threads=#{options.libvpx_threads}"
+			"--ovcopts-add=threads=#{options.libvpx_threads}",
+			"--ovcopts-add=quality=#{options.libvpx_quality}"
 		}
 
 formats["webm-vp9"] = WebmVP9!

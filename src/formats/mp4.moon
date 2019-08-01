@@ -8,6 +8,12 @@ class MP4 extends Format
 		@acceptsBitrate = true
 		@acceptsCRF = true
 
+	getFlags: =>
+		{
+			"--ovcopts-add=preset=#{options.x264_preset}"
+		}
+
+
 formats["mp4"] = MP4!
 
 class MP4NVENC extends Format
