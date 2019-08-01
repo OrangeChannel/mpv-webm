@@ -14,3 +14,19 @@ class WebmVP9 extends Format
 		}
 
 formats["webm-vp9"] = WebmVP9!
+
+class AV1 extends Format
+	new: =>
+		@displayName = "AV1"
+		@videoCodec = "libaom-av1"
+		@audioCodec = "libopus"
+		@outputExtension = "webm"
+		@acceptsBitrate = true
+		@acceptsCRF = true
+
+	getFlags: =>
+		{
+			"--ovcopts-add=strict=experimental"
+		}
+
+formats["av1"] = AV1!
