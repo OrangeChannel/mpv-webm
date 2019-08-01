@@ -6,6 +6,7 @@ class RawVideo extends Format
 		@audioCodec = "pcm_s16le"
 		@outputExtension = "avi"
 		@acceptsBitrate = false
+		@acceptsCRF = false
 
 	getColorspace: =>
 		-- This is very similar to the one we have in WebmVP8. Maybe we

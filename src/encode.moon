@@ -179,9 +179,14 @@ encode = (region, startTime, endTime) ->
 			append(command, {
 				"--ovcopts-add=b=#{bitrate}k"
 			})
-	elseif options.target_filesize <= 0 and format.acceptsBitrate
+	elseif options.target_filesize <= 0 and format.acceptsBitrate and format.acceptsCRF
 		-- set video bitrate to 0. This might enable constant quality, or some
 		-- other encoding modes, depending on the codec.
+		append(command, {
+			"--ovcopts-add=b=0",
+			"--ovcopts-add=crf=#{options.crf}"
+		})
+	elseif options.target_filesize <=0 and format.acceptsBitrate
 		append(command, {
 			"--ovcopts-add=b=0"
 		})

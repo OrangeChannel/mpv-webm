@@ -6,6 +6,7 @@ class WebmVP9 extends Format
 		@audioCodec = "libopus"
 		@outputExtension = "webm"
 		@acceptsBitrate = true
+		@acceptsCRF = true
 
 	getFlags: =>
 		{

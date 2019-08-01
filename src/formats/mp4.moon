@@ -6,6 +6,7 @@ class MP4 extends Format
 		@audioCodec = "aac"
 		@outputExtension = "mp4"
 		@acceptsBitrate = true
+		@acceptsCRF = true
 
 formats["mp4"] = MP4!
 
