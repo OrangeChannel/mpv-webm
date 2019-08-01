@@ -42,7 +42,7 @@ local options = {
 	-- Sets the output format, from a few predefined ones.
 	-- Currently we have webm-vp8 (libvpx/libvorbis), webm-vp9 (libvpx-vp9/libvorbis)
 	-- and raw (rawvideo/pcm_s16le).
-	output_format = "webm-vp8",
+	output_format = "webm-vp9",
 	twopass = false,
 	-- If set, applies the video filters currently used on the playback to the encode.
 	apply_current_filters = true,
@@ -50,10 +50,13 @@ local options = {
 	write_filename_on_metadata = false,
 	-- Set the number of encoding threads, for codecs libvpx and libvpx-vp9
 	libvpx_threads = 4,
+	libvpx_quality = "best",
+	h26x_preset = "medium",
+	crf = 10,
 	additional_flags = "",
 	-- Useful for flags that may impact output filesize, such as crf, qmin, qmax etc
 	-- Won't be applied when strict_filesize_constraint is on.
-	non_strict_additional_flags = "--ovcopts-add=crf=10",
+	non_strict_additional_flags = "",
 	-- Display the encode progress, in %. Requires run_detached to be disabled.
 	-- On Windows, it shows a cmd popup. "auto" will display progress on non-Windows platforms.
 	display_progress = "auto",
@@ -459,11 +462,11 @@ do
   _class_0 = setmetatable({
     __init = function(self)
       self.displayName = "Basic"
-      self.supportsTwopass = true
       self.videoCodec = ""
       self.audioCodec = ""
       self.outputExtension = ""
       self.acceptsBitrate = true
+      self.acceptsCRF = true
     end,
     __base = _base_0,
     __name = "Format"
@@ -478,6 +481,106 @@ do
   _base_0.__class = _class_0
   Format = _class_0
 end
+local MP4AVC
+do
+  local _class_0
+  local _parent_0 = Format
+  local _base_0 = {
+    getFlags = function(self)
+      return {
+        "--ovcopts-add=preset=" .. tostring(options.h26x_preset)
+      }
+    end
+  }
+  _base_0.__index = _base_0
+  setmetatable(_base_0, _parent_0.__base)
+  _class_0 = setmetatable({
+    __init = function(self)
+      self.displayName = "MP4 (h264/AAC)"
+      self.videoCodec = "libx264"
+      self.audioCodec = "aac"
+      self.outputExtension = "mp4"
+      self.acceptsBitrate = true
+      self.acceptsCRF = true
+    end,
+    __base = _base_0,
+    __name = "MP4AVC",
+    __parent = _parent_0
+  }, {
+    __index = function(cls, name)
+      local val = rawget(_base_0, name)
+      if val == nil then
+        local parent = rawget(cls, "__parent")
+        if parent then
+          return parent[name]
+        end
+      else
+        return val
+      end
+    end,
+    __call = function(cls, ...)
+      local _self_0 = setmetatable({}, _base_0)
+      cls.__init(_self_0, ...)
+      return _self_0
+    end
+  })
+  _base_0.__class = _class_0
+  if _parent_0.__inherited then
+    _parent_0.__inherited(_parent_0, _class_0)
+  end
+  MP4AVC = _class_0
+end
+formats["mp4-avc"] = MP4AVC()
+local MP4HEVC
+do
+  local _class_0
+  local _parent_0 = Format
+  local _base_0 = {
+    getFlags = function(self)
+      return {
+        "--ovcopts-add=preset=" .. tostring(options.h26x_preset)
+      }
+    end
+  }
+  _base_0.__index = _base_0
+  setmetatable(_base_0, _parent_0.__base)
+  _class_0 = setmetatable({
+    __init = function(self)
+      self.displayName = "MP4 (h265/AAC)"
+      self.videoCodec = "libx265"
+      self.audioCodec = "aac"
+      self.outputExtension = "mp4"
+      self.acceptsBitrate = true
+      self.acceptsCRF = true
+    end,
+    __base = _base_0,
+    __name = "MP4HEVC",
+    __parent = _parent_0
+  }, {
+    __index = function(cls, name)
+      local val = rawget(_base_0, name)
+      if val == nil then
+        local parent = rawget(cls, "__parent")
+        if parent then
+          return parent[name]
+        end
+      else
+        return val
+      end
+    end,
+    __call = function(cls, ...)
+      local _self_0 = setmetatable({}, _base_0)
+      cls.__init(_self_0, ...)
+      return _self_0
+    end
+  })
+  _base_0.__class = _class_0
+  if _parent_0.__inherited then
+    _parent_0.__inherited(_parent_0, _class_0)
+  end
+  MP4HEVC = _class_0
+end
+formats["mp4-hevc"] = MP4HEVC()
 local RawVideo
 do
   local _class_0
@@ -512,11 +615,11 @@ do
   _class_0 = setmetatable({
     __init = function(self)
       self.displayName = "Raw"
-      self.supportsTwopass = false
       self.videoCodec = "rawvideo"
       self.audioCodec = "pcm_s16le"
       self.outputExtension = "avi"
       self.acceptsBitrate = false
+      self.acceptsCRF = false
     end,
     __base = _base_0,
     __name = "RawVideo",
@@ -546,71 +649,6 @@ do
   RawVideo = _class_0
 end
 formats["raw"] = RawVideo()
-local WebmVP8
-do
-  local _class_0
-  local _parent_0 = Format
-  local _base_0 = {
-    getPreFilters = function(self)
-      local colormatrixFilter = {
-        ["bt.709"] = "bt709",
-        ["bt.2020"] = "bt2020",
-        ["smpte-240m"] = "smpte240m"
-      }
-      local ret = { }
-      local colormatrix = mp.get_property_native("video-params/colormatrix")
-      if colormatrixFilter[colormatrix] then
-        append(ret, {
-          "lavfi-colormatrix=" .. tostring(colormatrixFilter[colormatrix]) .. ":bt601"
-        })
-      end
-      return ret
-    end,
-    getFlags = function(self)
-      return {
-        "--ovcopts-add=threads=" .. tostring(options.libvpx_threads)
-      }
-    end
-  }
-  _base_0.__index = _base_0
-  setmetatable(_base_0, _parent_0.__base)
-  _class_0 = setmetatable({
-    __init = function(self)
-      self.displayName = "WebM"
-      self.supportsTwopass = true
-      self.videoCodec = "libvpx"
-      self.audioCodec = "libvorbis"
-      self.outputExtension = "webm"
-      self.acceptsBitrate = true
-    end,
-    __base = _base_0,
-    __name = "WebmVP8",
-    __parent = _parent_0
-  }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil then
-        local parent = rawget(cls, "__parent")
-        if parent then
-          return parent[name]
-        end
-      else
-        return val
-      end
-    end,
-    __call = function(cls, ...)
-      local _self_0 = setmetatable({}, _base_0)
-      cls.__init(_self_0, ...)
-      return _self_0
-    end
-  })
-  _base_0.__class = _class_0
-  if _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
-  WebmVP8 = _class_0
-end
-formats["webm-vp8"] = WebmVP8()
 local WebmVP9
 do
   local _class_0
@@ -618,7 +656,8 @@ do
   local _base_0 = {
     getFlags = function(self)
       return {
-        "--ovcopts-add=threads=" .. tostring(options.libvpx_threads)
+        "--ovcopts-add=threads=" .. tostring(options.libvpx_threads),
+        "--ovcopts-add=quality=" .. tostring(options.libvpx_quality)
       }
     end
   }
@@ -627,11 +666,11 @@ do
   _class_0 = setmetatable({
     __init = function(self)
       self.displayName = "WebM (VP9)"
-      self.supportsTwopass = true
       self.videoCodec = "libvpx-vp9"
-      self.audioCodec = "libvorbis"
+      self.audioCodec = "libopus"
       self.outputExtension = "webm"
       self.acceptsBitrate = true
+      self.acceptsCRF = true
     end,
     __base = _base_0,
     __name = "WebmVP9",
@@ -661,24 +700,30 @@ do
   WebmVP9 = _class_0
 end
 formats["webm-vp9"] = WebmVP9()
-local MP4
+local AV1
 do
   local _class_0
   local _parent_0 = Format
-  local _base_0 = { }
+  local _base_0 = {
+    getFlags = function(self)
+      return {
+        "--ovcopts-add=strict=experimental"
+      }
+    end
+  }
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   _class_0 = setmetatable({
     __init = function(self)
-      self.displayName = "MP4 (h264/AAC)"
-      self.supportsTwopass = true
-      self.videoCodec = "libx264"
-      self.audioCodec = "aac"
-      self.outputExtension = "mp4"
+      self.displayName = "AV1"
+      self.videoCodec = "libaom-av1"
+      self.audioCodec = "libopus"
+      self.outputExtension = "webm"
       self.acceptsBitrate = true
+      self.acceptsCRF = true
     end,
     __base = _base_0,
-    __name = "MP4",
+    __name = "AV1",
     __parent = _parent_0
   }, {
     __index = function(cls, name)
@@ -702,53 +747,9 @@ do
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
-  MP4 = _class_0
+  AV1 = _class_0
 end
-formats["mp4"] = MP4()
-local MP4NVENC
-do
-  local _class_0
-  local _parent_0 = Format
-  local _base_0 = { }
-  _base_0.__index = _base_0
-  setmetatable(_base_0, _parent_0.__base)
-  _class_0 = setmetatable({
-    __init = function(self)
-      self.displayName = "MP4 (h264-NVENC/AAC)"
-      self.supportsTwopass = true
-      self.videoCodec = "h264_nvenc"
-      self.audioCodec = "aac"
-      self.outputExtension = "mp4"
-      self.acceptsBitrate = true
-    end,
-    __base = _base_0,
-    __name = "MP4NVENC",
-    __parent = _parent_0
-  }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil then
-        local parent = rawget(cls, "__parent")
-        if parent then
-          return parent[name]
-        end
-      else
-        return val
-      end
-    end,
-    __call = function(cls, ...)
-      local _self_0 = setmetatable({}, _base_0)
-      cls.__init(_self_0, ...)
-      return _self_0
-    end
-  })
-  _base_0.__class = _class_0
-  if _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
-  MP4NVENC = _class_0
-end
-formats["mp4-nvenc"] = MP4NVENC()
+formats["av1"] = AV1()
 local Page
 do
   local _class_0
@@ -1171,6 +1172,11 @@ encode = function(region, startTime, endTime)
         "--ovcopts-add=b=" .. tostring(bitrate) .. "k"
       })
     end
+  elseif options.target_filesize <= 0 and format.acceptsBitrate and format.acceptsCRF then
+    append(command, {
+      "--ovcopts-add=b=0",
+      "--ovcopts-add=crf=" .. tostring(options.crf)
+    })
   elseif options.target_filesize <= 0 and format.acceptsBitrate then
     append(command, {
       "--ovcopts-add=b=0"
@@ -1183,37 +1189,6 @@ encode = function(region, startTime, endTime)
     for token in string.gmatch(options.non_strict_additional_flags, "[^%s]+") do
       command[#command + 1] = token
     end
-  end
-  if options.twopass and format.supportsTwopass and not is_stream then
-    local first_pass_cmdline
-    do
-      local _accum_0 = { }
-      local _len_0 = 1
-      for _index_0 = 1, #command do
-        local arg = command[_index_0]
-        _accum_0[_len_0] = arg
-        _len_0 = _len_0 + 1
-      end
-      first_pass_cmdline = _accum_0
-    end
-    append(first_pass_cmdline, {
-      "--ovcopts-add=flags=+pass1",
-      "-of=" .. tostring(format.outputExtension),
-      "-o=" .. tostring(get_null_path())
-    })
-    message("Starting first pass...")
-    msg.verbose("First-pass command line: ", table.concat(first_pass_cmdline, " "))
-    local res = run_subprocess({
-      args = first_pass_cmdline,
-      cancellable = false
-    })
-    if not res then
-      message("First pass failed! Check the logs for details.")
-      return 
-    end
-    append(command, {
-      "--ovcopts-add=flags=+pass2"
-    })
   end
   local dir = ""
   if is_stream then
@@ -1664,14 +1639,24 @@ do
         step = 250,
         min = 0,
         altDisplayNames = {
-          [0] = "0 (constant quality)"
+          [0] = "0 (CRF)",
+          [8000] = "8MB Discord limit"
         }
       }
+      local crfOpts = {
+        step = 1,
+        min = 1,
+        max = 51
+      }
+      local audioOpts = {
+        step = 8,
+        min = 56
+      }
       local formatIds = {
-        "webm-vp8",
         "webm-vp9",
-        "mp4",
-        "mp4-nvenc",
+        "mp4-avc",
+        "mp4-hevc",
+        "av1",
         "raw"
       }
       local formatOpts = {
@@ -1689,14 +1674,74 @@ do
           return _accum_0
         end)()
       }
+      local libvpxOpts = {
+        possibleValues = {
+          {
+            "realtime",
+            "realtime (fast)"
+          },
+          {
+            "good",
+            "default"
+          },
+          {
+            "best",
+            "best (slow)"
+          }
+        }
+      }
+      local h26x_presetOpts = {
+        possibleValues = {
+          {
+            "veryslow",
+            "Very Slow"
+          },
+          {
+            "slower",
+            "Slower"
+          },
+          {
+            "slow",
+            "Slow"
+          },
+          {
+            "medium",
+            "Medium (default)"
+          },
+          {
+            "fast",
+            "Fast"
+          },
+          {
+            "faster",
+            "Faster"
+          },
+          {
+            "veryfast",
+            "Very Fast"
+          },
+          {
+            "superfast",
+            "Super Fast"
+          },
+          {
+            "ultrafast",
+            "Ultra-fast"
+          }
+        }
+      }
       self.options = {
         {
           "output_format",
           Option("list", "Output Format", options.output_format, formatOpts)
         },
         {
-          "twopass",
-          Option("bool", "Two Pass", options.twopass)
+          "libvpx_quality",
+          Option("list", "VP9 Quality", options.libvpx_quality, libvpxOpts)
+        },
+        {
+          "h26x_preset",
+          Option("list", "x264/x265 Preset", options.h26x_preset, h26x_presetOpts)
         },
         {
           "apply_current_filters",
@@ -1711,12 +1756,20 @@ do
           Option("bool", "Strict Filesize Constraint", options.strict_filesize_constraint)
         },
         {
-          "write_filename_on_metadata",
-          Option("bool", "Write Filename on Metadata", options.write_filename_on_metadata)
+          "strict_audio_bitrate",
+          Option("int", "Audio Bitrate", options.strict_audio_bitrate, audioOpts)
         },
         {
           "target_filesize",
           Option("int", "Target Filesize", options.target_filesize, filesizeOpts)
+        },
+        {
+          "crf",
+          Option("int", "CRF", options.crf, crfOpts)
+        },
+        {
+          "write_filename_on_metadata",
+          Option("bool", "Write Filename on Metadata", options.write_filename_on_metadata)
         }
       }
       self.keybinds = {
