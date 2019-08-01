@@ -199,27 +199,6 @@ encode = (region, startTime, endTime) ->
 		for token in string.gmatch(options.non_strict_additional_flags, "[^%s]+") do
 			command[#command + 1] = token
 
-	-- Do the first pass now, as it won't require the output path. I don't think this works on streams.
-	-- Also this will ignore run_detached, at least for the first pass.
-	if options.twopass and format.supportsTwopass and not is_stream
-		-- copy the commandline
-		first_pass_cmdline = [arg for arg in *command]
-		append(first_pass_cmdline, {
-			"--ovcopts-add=flags=+pass1",
-			"-of=#{format.outputExtension}",
-			"-o=#{get_null_path!}"
-		})
-		message("Starting first pass...")
-		msg.verbose("First-pass command line: ", table.concat(first_pass_cmdline, " "))
-		res = run_subprocess({args: first_pass_cmdline, cancellable: false})
-		if not res
-			message("First pass failed! Check the logs for details.")
-			return
-		-- set the second pass flag on the final encode command
-		append(command, {
-			"--ovcopts-add=flags=+pass2"
-		})
-
 	dir = ""
 	if is_stream
 		dir = parse_directory("~")

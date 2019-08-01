@@ -1,7 +1,6 @@
 class WebmVP9 extends Format
 	new: =>
 		@displayName = "WebM (VP9)"
-		@supportsTwopass = true
 		@videoCodec = "libvpx-vp9"
 		@audioCodec = "libopus"
 		@outputExtension = "webm"

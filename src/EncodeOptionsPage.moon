@@ -160,7 +160,6 @@ class EncodeOptionsPage extends Page
 			{"x264_preset", Option("list", "x264 Preset", options.x264_preset, x264_presetOpts)},
 			{"apply_current_filters", Option("bool", "Apply Current Video Filters", options.apply_current_filters)},
 			{"scale_height", Option("list", "Scale Height", options.scale_height, scaleHeightOpts)},
-			{"twopass", Option("bool", "Two Pass", options.twopass)},
 			{"strict_filesize_constraint", Option("bool", "Strict Filesize Constraint", options.strict_filesize_constraint)},
 			{"strict_audio_bitrate", Option("int", "Audio Bitrate", options.strict_audio_bitrate, audioOpts)},
 			{"target_filesize", Option("int", "Target Filesize", options.target_filesize, filesizeOpts)},

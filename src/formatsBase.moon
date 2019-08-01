@@ -4,7 +4,6 @@ formats = {}
 class Format
 	new: =>
 		@displayName = "Basic"
-		@supportsTwopass = true
 		@videoCodec = ""
 		@audioCodec = ""
 		@outputExtension = ""

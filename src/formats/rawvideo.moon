@@ -1,7 +1,6 @@
 class RawVideo extends Format
 	new: =>
 		@displayName = "Raw"
-		@supportsTwopass = false
 		@videoCodec = "rawvideo"
 		@audioCodec = "pcm_s16le"
 		@outputExtension = "avi"

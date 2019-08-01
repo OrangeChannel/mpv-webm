@@ -38,7 +38,6 @@ local options = {
 	-- Currently we have webm-vp8 (libvpx/libvorbis), webm-vp9 (libvpx-vp9/libvorbis)
 	-- and raw (rawvideo/pcm_s16le).
 	output_format = "webm-vp9",
-	twopass = false,
 	-- If set, applies the video filters currently used on the playback to the encode.
 	apply_current_filters = true,
 	-- If set, writes the video's filename to the "Title" field on the metadata.
