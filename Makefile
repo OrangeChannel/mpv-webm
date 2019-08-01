@@ -8,7 +8,6 @@ SOURCES += src/formatsBase.moon
 SOURCES += src/formats/rawvideo.moon
 SOURCES += src/formats/webm.moon
 SOURCES += src/formats/mp4.moon
-SOURCES += src/formats/av1.moon
 SOURCES += src/Page.moon
 SOURCES += src/EncodeWithProgress.moon
 SOURCES += src/encode.moon
