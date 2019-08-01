@@ -45,7 +45,7 @@ local options = {
 	-- Set the number of encoding threads, for codecs libvpx and libvpx-vp9
 	libvpx_threads = 4,
 	libvpx_quality = "best",
-	x264_preset = "medium",
+	h26x_preset = "medium",
 	crf = 10,
 	additional_flags = "",
 	-- Useful for flags that may impact output filesize, such as crf, qmin, qmax etc

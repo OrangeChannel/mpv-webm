@@ -144,20 +144,20 @@ class EncodeOptionsPage extends Page
 
 		-- I really dislike hardcoding this here, but, as said below, order in dicts isn't
 		-- guaranteed, and we can't use the formats dict keys.
-		formatIds = {"webm-vp9", "mp4", "mp4-nvenc", "av1", "raw"}
+		formatIds = {"webm-vp9", "mp4-avc", "mp4-hevc", "av1", "raw"}
 		formatOpts =
 			possibleValues: [{fId, formats[fId].displayName} for fId in *formatIds]
 
 		libvpxOpts =
 			possibleValues: {{"realtime", "realtime (fast)"}, {"good", "default"}, {"best", "best (slow)"}}
-		x264_presetOpts =
+		h26x_presetOpts =
 			possibleValues: {{"veryslow", "Very Slow"}, {"slower", "Slower"}, {"slow", "Slow"}, {"medium", "Medium (default)"}, {"fast", "Fast"}, {"faster", "Faster"}, {"veryfast", "Very Fast"}, {"superfast", "Super Fast"}, {"ultrafast", "Ultra-fast"}}
 		-- This could be a dict instead of a array of pairs, but order isn't guaranteed
 		-- by dicts on Lua.
 		@options = {
 			{"output_format", Option("list", "Output Format", options.output_format, formatOpts)},
 			{"libvpx_quality", Option("list", "VP9 Quality", options.libvpx_quality, libvpxOpts)},
-			{"x264_preset", Option("list", "x264 Preset", options.x264_preset, x264_presetOpts)},
+			{"h26x_preset", Option("list", "x264/x265 Preset", options.h26x_preset, h26x_presetOpts)},
 			{"apply_current_filters", Option("bool", "Apply Current Video Filters", options.apply_current_filters)},
 			{"scale_height", Option("list", "Scale Height", options.scale_height, scaleHeightOpts)},
 			{"strict_filesize_constraint", Option("bool", "Strict Filesize Constraint", options.strict_filesize_constraint)},
