@@ -20,7 +20,9 @@ append_track = (out, track) ->
 
 	-- The external tracks rely on the behavior that, when using
 	-- audio-file/sub-file only once, the track is selected by default.
-	if track['external']
+	-- Also, for some reason, ytdl-hook produces external tracks with absurdly long
+	-- filenames; this breaks our command line. Try to keep it sane, under 2048 characters.
+	if track['external'] and string.len(track['external-filename']) <= 2048
 		append(out, {
 			"--#{external_flag[track['type']]}=#{track['external-filename']}"
 		})
@@ -57,6 +59,7 @@ get_playback_options = ->
 	append_property(ret, "sub-auto")
 	append_property(ret, "sub-delay")
 	append_property(ret, "video-rotate")
+	append_property(ret, "ytdl-format")
 
 	return ret
 
@@ -199,6 +202,13 @@ encode = (region, startTime, endTime) ->
 	if not options.strict_filesize_constraint
 		for token in string.gmatch(options.non_strict_additional_flags, "[^%s]+") do
 			command[#command + 1] = token
+		
+		-- Also add CRF here, as it used to be a part of the non-strict flags.
+		-- This might change in the future, I don't know.
+		if options.crf >= 0
+			append(command, {
+				"--ovcopts-add=crf=#{options.crf}"
+			})
 
 	dir = ""
 	if is_stream

@@ -54,7 +54,10 @@ local options = {
 	h26x_preset = "medium",
 	crf = 10,
 	additional_flags = "",
-	-- Useful for flags that may impact output filesize, such as crf, qmin, qmax etc
+	-- Constant Rate Factor (CRF). The value meaning and limits may change,
+	-- from codec to codec. Set to -1 to disable.
+	crf = 10,
+	-- Useful for flags that may impact output filesize, such as qmin, qmax etc
 	-- Won't be applied when strict_filesize_constraint is on.
 	non_strict_additional_flags = "",
 	-- Display the encode progress, in %. Requires run_detached to be disabled.
@@ -971,7 +974,7 @@ append_track = function(out, track)
     ["audio"] = "aid",
     ["sub"] = "sid"
   }
-  if track['external'] then
+  if track['external'] and string.len(track['external-filename']) <= 2048 then
     return append(out, {
       "--" .. tostring(external_flag[track['type']]) .. "=" .. tostring(track['external-filename'])
     })
@@ -1021,6 +1024,7 @@ get_playback_options = function()
   append_property(ret, "sub-auto")
   append_property(ret, "sub-delay")
   append_property(ret, "video-rotate")
+  append_property(ret, "ytdl-format")
   return ret
 end
 local get_speed_flags
@@ -1189,6 +1193,11 @@ encode = function(region, startTime, endTime)
     for token in string.gmatch(options.non_strict_additional_flags, "[^%s]+") do
       command[#command + 1] = token
     end
+    if options.crf >= 0 then
+      append(command, {
+        "--ovcopts-add=crf=" .. tostring(options.crf)
+      })
+    end
   end
   local dir = ""
   if is_stream then
@@ -1308,7 +1317,8 @@ do
       ass:append(tostring(bold('2:')) .. " change point B (" .. tostring(self.pointB.x) .. ", " .. tostring(self.pointB.y) .. ")\\N")
       ass:append(tostring(bold('r:')) .. " reset to whole screen\\N")
       ass:append(tostring(bold('ESC:')) .. " cancel crop\\N")
-      ass:append(tostring(bold('ENTER:')) .. " confirm crop\\N")
+      local width, height = math.abs(self.pointA.x - self.pointB.x), math.abs(self.pointA.y - self.pointB.y)
+      ass:append(tostring(bold('ENTER:')) .. " confirm crop (" .. tostring(width) .. "x" .. tostring(height) .. ")\\N")
       return mp.set_osd_ass(window.w, window.h, ass.text)
     end
   }

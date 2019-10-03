@@ -48,7 +48,10 @@ local options = {
 	h26x_preset = "medium",
 	crf = 10,
 	additional_flags = "",
-	-- Useful for flags that may impact output filesize, such as crf, qmin, qmax etc
+	-- Constant Rate Factor (CRF). The value meaning and limits may change,
+	-- from codec to codec. Set to -1 to disable.
+	crf = 10,
+	-- Useful for flags that may impact output filesize, such as qmin, qmax etc
 	-- Won't be applied when strict_filesize_constraint is on.
 	non_strict_additional_flags = "",
 	-- Display the encode progress, in %. Requires run_detached to be disabled.
