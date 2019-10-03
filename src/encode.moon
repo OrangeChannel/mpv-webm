@@ -17,7 +17,7 @@ append_track = (out, track) ->
 		"video": "vid"
 		"audio": "aid"
 		"sub": "sid"
-	
+
 	-- The external tracks rely on the behavior that, when using
 	-- audio-file/sub-file only once, the track is selected by default.
 	if track['external']
@@ -117,7 +117,7 @@ encode = (region, startTime, endTime) ->
 	for _, track in ipairs get_active_tracks!
 		append_track(command, track)
 		track_types_added[track['type']] = true
-	
+
 	for track_type, was_added in pairs track_types_added
 		if was_added
 			continue
@@ -186,6 +186,7 @@ encode = (region, startTime, endTime) ->
 			"--ovcopts-add=b=0",
 			"--ovcopts-add=crf=#{options.crf}"
 		})
+	-- not currently used by any formats
 	elseif options.target_filesize <=0 and format.acceptsBitrate
 		append(command, {
 			"--ovcopts-add=b=0"
