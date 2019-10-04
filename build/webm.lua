@@ -43,7 +43,6 @@ local options = {
 	-- Currently we have webm-vp8 (libvpx/libvorbis), webm-vp9 (libvpx-vp9/libvorbis)
 	-- and raw (rawvideo/pcm_s16le).
 	output_format = "webm-vp9",
-	twopass = false,
 	-- If set, applies the video filters currently used on the playback to the encode.
 	apply_current_filters = true,
 	-- If set, writes the video's filename to the "Title" field on the metadata.
@@ -52,11 +51,8 @@ local options = {
 	libvpx_threads = 4,
 	libvpx_quality = "best",
 	h26x_preset = "medium",
-	crf = 10,
 	additional_flags = "",
-	-- Constant Rate Factor (CRF). The value meaning and limits may change,
-	-- from codec to codec. Set to -1 to disable.
-	crf = 10,
+	crf = 16,
 	-- Useful for flags that may impact output filesize, such as qmin, qmax etc
 	-- Won't be applied when strict_filesize_constraint is on.
 	non_strict_additional_flags = "",
