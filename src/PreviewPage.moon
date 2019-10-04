@@ -37,7 +37,7 @@ class PreviewPage extends Page
 	dispose: =>
 		mp.set_property("ab-loop-a", "no")
 		mp.set_property("ab-loop-b", "no")
-		
+
 		-- restore original properties
 		for prop, value in pairs @originalProperties
 			mp.set_property_native(prop, value)

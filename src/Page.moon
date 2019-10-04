@@ -12,7 +12,7 @@ class Page
 			mp.remove_key_binding(key)
 
 	observe_properties: =>
-		-- We can't just pass the self\draw! function as it's resolved to a closure 
+		-- We can't just pass the self\draw! function as it's resolved to a closure
 		-- internally, and closures can't be unobserved.
 		@sizeCallback = () ->
 			self\draw!

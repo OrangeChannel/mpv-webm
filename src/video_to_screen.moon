@@ -21,7 +21,7 @@ get_video_dimensions = ->
 	if mp.get_property_number("video-rotate") % 180 == 90
 		w, h = h, w
 		dw, dh = dh, dw
-	
+
 	_video_dimensions = {
 		top_left: {},
 		bottom_right: {},

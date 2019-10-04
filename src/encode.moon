@@ -202,7 +202,7 @@ encode = (region, startTime, endTime) ->
 	if not options.strict_filesize_constraint
 		for token in string.gmatch(options.non_strict_additional_flags, "[^%s]+") do
 			command[#command + 1] = token
-		
+
 		-- Also add CRF here, as it used to be a part of the non-strict flags.
 		-- This might change in the future, I don't know.
 		if options.crf >= 0

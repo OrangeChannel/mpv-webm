@@ -21,7 +21,7 @@ class EncodeWithProgress extends Page
 		matchExit = string.match(line, "Exiting... [(]([%a ]+)[)]")
 		if matchTime == nil and matchExit == nil
 			return
-		
+
 		if matchTime != nil and tonumber(matchTime) > @currentTime -- sometimes we get timestamps older than before...
 			@currentTime = tonumber(matchTime)
 		if matchExit != nil
